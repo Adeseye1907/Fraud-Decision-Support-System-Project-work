@@ -1,0 +1,11 @@
+Dear Sir,
+I hope this message finds you well.
+
+Thank you for the grading. Concerning the outlier, they seem to be quite needed for the attrition analysis hence there was no need to remove them, and i did not work on it because i am not doing a cross validation that might bring about a bias in the model prediction. Since it is attrition analysis the outlier is still significant because the income category and transaction activities of customers mostly differs and cannot be same. The Attrition analysis in my python code gave details about the attrition rates. The Attrition rate was 16.07% and the retention rates was 83.93% which was well documented in the report. I showed the attrition rates clearly also in my python environment for all other observation i.e. the transaction frequency, months in active etc. . After using the count to know the number of customers in that category the attrition rate is also calculated alonside of each count been done.
+
+A rule-based customer retention risk score was developed using behavioural indicators identified during the exploratory data analysis as being associated with customer attrition. The selected indicators were Months Inactive, Transaction Count, Transaction Amount, Credit Utilisation, and Customer Contact Frequency. Each indicator contributed one point when the customer's behaviour met a predefined risk threshold. The thresholds were established based on patterns observed in the exploratory analysis. For example, customers with three or more inactive months and those with low transaction amounts exhibited noticeably higher attrition rates compared with other customer groups. The cumulative score was used to classify customers into Low Risk (0–2 points), Medium Risk (3–4 points), and High Risk (5 points). This rule-based approach provides a simple and interpretable framework for identifying customers who may require targeted retention strategies.
+
+My code environment is included in the Appendix of my report, and i acknowledge the issue on outlier and the governance which was abit limited cos it was omitted, but i still believe a 25 score grade is rather not a reflection of the level of input in this work sir.
+
+I plead sir, that you kindly review this again.
+warm regards.

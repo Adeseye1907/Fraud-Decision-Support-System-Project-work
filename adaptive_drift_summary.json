@@ -1,0 +1,9 @@
+{
+    "reference_observations": 199364,
+    "current_observations": 85443,
+    "total_features": 30,
+    "stable_features": 16,
+    "moderate_drift_features": 9,
+    "significant_drift_features": 5,
+    "adaptive_status": "ADAPTATION REQUIRED"
+}

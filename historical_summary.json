@@ -1,0 +1,13 @@
+{
+  "total_transactions": 56746,
+  "actual_fraud_count": 95,
+  "fraud_caught": 73,
+  "fraud_missed": 22,
+  "false_alarms": 8,
+  "detection_rate": 0.7684,
+  "roc_auc": 0.9606,
+  "pr_auc": 0.8127,
+  "fraud_precision": 0.9012,
+  "fraud_recall": 0.7684,
+  "fraud_f1": 0.8295
+}
