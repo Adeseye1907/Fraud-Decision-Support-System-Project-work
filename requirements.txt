@@ -1,11 +1,12 @@
 streamlit
+joblib
 pandas
 numpy
 scikit-learn
-joblib
-shap
-kafka-python
 xgboost
+shap
 lime
-scipy
+kafka-python
 websocket-client
+scipy
+plotly
