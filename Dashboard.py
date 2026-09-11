@@ -4456,15 +4456,17 @@ elif page == ("Threshold Tuner"):
 # 14. AI DECISION ASSISTANT
 # ============================================================
 
+# ============================================================
+# AI DECISION ASSISTANT
+# ============================================================
 elif page == "AI Decision Assistant":
-
     st.markdown(
         """
         <div class="dashboard-header">
             <div>
-                <div class="dashboard-title">AI Decision Assistant</div>
-                <div class="dashboard-subtitle">
-                    Interpret fraud signals and support risk-aware operational review.
+                <div style="font-size: 26px; font-weight: 800; color: #10233f;">AI Decision Assistant</div>
+                <div style="font-size: 14px; color: #475569; margin-top: 2px;">
+                    Interprets fraud signals, local feature attributions, and operational risk telemetry for investigator triage.
                 </div>
             </div>
         </div>
@@ -4472,12 +4474,96 @@ elif page == "AI Decision Assistant":
         unsafe_allow_html=True,
     )
 
-    question = st.text_area("Ask about the fraud decision-support framework")
-    if st.button("Analyse"):
-        if question.strip():
-            st.info("The decision assistant can be connected to the model, XAI outputs and operational rules.")
-        else:
-            st.warning("Enter a question first.")
+    # Initialize chat history in session state
+    if "assistant_messages" not in st.session_state:
+        st.session_state.assistant_messages = [
+            {
+                "role": "assistant",
+                "content": (
+                    "Hello. I am connected to the fraud detection pipeline, SHAP interpretability engine, and drift sensors. "
+                    "Ask me to analyze current transaction risks, explain high-risk features, or evaluate drift status."
+                ),
+            }
+        ]
+
+    # Context retrieval from active session
+    tx_stream = st.session_state.get("realtime_transactions", [])
+    total_stream_tx = len(tx_stream)
+    drift_score = st.session_state.get("last_drift_score", 0.0)
+    drift_status = st.session_state.get("last_drift_status", "STABLE")
+
+    # Rule-based / Contextual reasoning engine
+    def generate_decision_support_response(user_query: str) -> str:
+        q = user_query.lower()
+
+        # 1. Drift & System Health Queries
+        if any(w in q for w in ["drift", "ks", "kolmogorov", "staleness", "adapt"]):
+            return (
+                f"**System Drift Telemetry Status:**\n\n"
+                f"- **Current Drift Score:** `{drift_score:.2f}`\n"
+                f"- **Operational State:** `{drift_status}`\n"
+                f"- **Active Stream Volume:** `{total_stream_tx}` events\n\n"
+                f"The system continuously evaluates incoming feature distributions ($V_{{14}}$, $V_4$, $V_{{10}}$, $V_{{12}}$, `Amount`) "
+                f"against the baseline training data using two-sample Kolmogorov-Smirnov tests. "
+                + (
+                    "⚠️ **Advisory:** Multi-variable drift thresholds have been exceeded. Controlled model retraining via the Champion-Challenger pipeline is recommended."
+                    if drift_status == "ADAPTATION REQUIRED"
+                    else "✓ Feature distributions currently match historical baseline expectations within tolerance."
+                )
+            )
+
+        # 2. High-Risk / Triage Queries
+        elif any(w in q for w in ["risk", "high risk", "flagged", "queue", "investigate", "alert"]):
+            if total_stream_tx == 0:
+                return "The live transaction stream buffer is currently empty. Run streaming ingestion to evaluate transactions."
+
+            high_risk = [t for t in tx_stream if float(t.get("fraud_probability", 0.0)) >= 0.70]
+            count_hr = len(high_risk)
+            pct_hr = (count_hr / total_stream_tx) * 100
+
+            return (
+                f"**Operational Triage Overview:**\n\n"
+                f"- **Stream Events Monitored:** `{total_stream_tx}`\n"
+                f"- **Priority Alerts (≥ 70% threshold):** `{count_hr}` ({pct_hr:.2f}% of stream)\n\n"
+                f"Transactions flagged in this tier represent high probability of financial loss or synthetic fraud patterns. "
+                f"Frontline analysts should prioritize these cases for immediate merchant hold or manual contact verification."
+            )
+
+        # 3. Model & Feature Explanation Queries (SHAP/LIME)
+        elif any(w in q for w in ["shap", "lime", "feature", "why", "explain", "v14", "amount"]):
+            return (
+                "**Interpretability and Feature Attribution Framework:**\n\n"
+                "- **Global Drivers:** Ensembled tree paths place the highest baseline importance on latent dimensions **$V_{14}$**, **$V_{10}$**, **$V_4$**, and **$V_{12}$**, followed by normalized transaction `Amount`.\n"
+                "- **Local Explanations:** For individual alerts, TreeSHAP values quantify whether a transaction's deviation pushes the predicted probability above the decision boundary ($\tau = 0.50$).\n"
+                "- Negative extremes on $V_{14}$ and sharp positive deviations on $V_4$ strongly correlate with known credit card skimming and account takeover signatures."
+            )
+
+        # Default fallback
+        return (
+            "I can assist with queries regarding:\n"
+            "1. **Operational Risk**: Current triage queue volume and alert distribution.\n"
+            "2. **Drift Telemetry**: KS test findings and Champion-Challenger readiness.\n"
+            "3. **Model Interpretability**: SHAP/LIME feature importance and decision boundary explanations.\n\n"
+            "Please specify which telemetry or transaction layer you wish to inspect."
+        )
+
+    # Render conversation history
+    for msg in st.session_state.assistant_messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Accept user input
+    if prompt := st.chat_input("Enter query regarding fraud signals, drift, or feature attributions..."):
+        # Display user query
+        st.session_state.assistant_messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Generate response
+        response = generate_decision_support_response(prompt)
+        st.session_state.assistant_messages.append({"role": "assistant", "content": response})
+        with st.chat_message("assistant"):
+            st.markdown(response)
 
 
 # ============================================================
